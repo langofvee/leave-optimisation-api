@@ -5,39 +5,13 @@ from datetime import date
 # from django.db.models.functions import window
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 
 import creatingBinaryArray
+from models import calendarificInput, leavePlan, leavesChunk, leavesInfo
 
 load_dotenv()
 
 app = FastAPI()
-
-
-# numOfLeaves=Leaves that a user gets, non-Sunday, non-Saturday
-# datesForLeaves=Date of each leave, non-Sunday, non-Saturday
-# dates are in YYYY-MM-DD format
-class leavesInfo(BaseModel):
-    numOfLeaves: int
-    datesForLeaves: list[date]
-    saturdayIncluded: bool = True
-    sundayIncluded: bool = True
-    sandwichLeavesConsidered: bool = True
-    country: str = "IN"
-    year: int = datetime.datetime.now(tz=datetime.timezone.utc).year
-
-
-class leavesChunk(BaseModel):
-    startDate: date
-    endDate: date
-    leaveDates: list[date]
-    totalLeaves: int
-    leavesUsed: int
-
-
-class leavePlan(BaseModel):
-    plan: list[leavesChunk]
-
 
 ########################
 @app.get("/")
@@ -59,13 +33,13 @@ def accept_details(data: leavesInfo):
     startDate = data.datesForLeaves[0]
     endDate = data.datesForLeaves[-1]
 
-    binaryArray = creatingBinaryArray(leavesInfo.datesForLeaves)
+    binaryArray = creatingBinaryArray(data.datesForLeaves)
     leaveChunkList = []
 
     # TODO: sliding window approach to go through the binary array and
     # put down the holiday+leave days range
     windowLen = 3
-    while windowLen <= leavesInfo.numOfLeaves:
+    while windowLen <= data.numOfLeaves:
         sum = 0
         for i in range(windowLen):
             sum = sum + int(binaryArray[i])
@@ -82,9 +56,9 @@ def accept_details(data: leavesInfo):
             if sum >= 3:
                 leaveChunkList.append(
                     leavesChunk(
-                        startDate=leavesInfo.datesForLeaves[0]
+                        startDate=data.datesForLeaves[0]
                         + datetime.timedelta(days=f),
-                        endDate=leavesInfo.datesForLeaves[0]
+                        endDate=data.datesForLeaves[0]
                         + datetime.timedelta(days=l),
                         # leaveDates=
                     )

@@ -1,7 +1,8 @@
-import os
-from dotenv import load_dotenv
-import httpx
 import json
+import os
+
+import httpx
+from dotenv import load_dotenv
 from pydantic import BaseModel
 
 
