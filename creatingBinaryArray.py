@@ -1,25 +1,25 @@
-from datetime import date, datetime, timedelta
+from datetime import timedelta
+
+from combinedLeaves import combineLeavesAndHolidays
+from models import calendarificInput, leavesInfo
+
+# input from combinedLeaves.py
 
 
-#input from combinedLeaves.py
-
-def create_binary_array(listOfLeaveDates: leavesInfo.datesForLeaves) -> list[int]:
-
+def createBinaryArray(
+    listOfLeaveDates: leavesInfo.datesForLeaves, calendarificInput: calendarificInput
+) -> list[int]:
     binaryArray = []
+    combinedList = combineLeavesAndHolidays(leavesInfo, calendarificInput)
+    combinedList.sort()
 
-    startDate = listOfLeaveDates[0]
-    endDate = listOfLeaveDates[-1]
+    startDate = combinedList[0]
+    endDate = combinedList[-1]
 
-    # marking leave days as 1 and letting non-leave days be zero
-    # error -> i only works for int and not date, date is not a data type
-    currentDate = startDate
-    leave_set = set(listOfLeaveDates)  # set(non repetitive list) of all the leave dates
-
-    while currentDate <= endDate:
-        if currentDate in leave_set or (currentDate.isoweekday() == 6 and leavesInfo.saturdayIncluded) or (currentDate.isoweekday() == 7 and leavesInfo.sundayIncluded):
+    for i in range(startDate, endDate + timedelta(days=1), timedelta(days=1)):
+        if i in combinedList:
             binaryArray.append(1)
         else:
             binaryArray.append(0)
-        currentDate += datetime.timedelta(days=1)
 
     return binaryArray

@@ -1,56 +1,45 @@
-from datetime import datetime
-
-from models import leavesChunk, leavesInfo
-
-#input from binary array
-def slidingWindowLogic(self, windowLen: int,binaryArray:list[int]):
-    leaveDates=[]
-    global chunk
-    chunk = leavesChunk(
-                startDate=datetime.date.today(),
-                endDate=datetime.date.today(),
-                leaveDates=leaveDates,
-                totalLeaves=0,
-                leavesUsed=0
-            )
-    windowSum = 0
-
-    for i in range (windowLen):
-            windowSum = windowSum + int(binaryArray[i])
-
-    f=0
-    l=windowLen-1
+from creatingBinaryArray import createBinaryArray
+from models import calendarificInput, leavesChunk, leavesInfo
 
 
-    while l < len(binaryArray)-1:
-        windowSum = windowSum - binaryArray[f]
-        f+=1
-        windowSum = windowSum + binaryArray[l]
-        l=l+1
+# input from binary array
+def slidingWindowLogic(
+    leavesUser: leavesInfo, leavesCalendarific: calendarificInput
+) -> list[leavesChunk]:
 
-        if (l-f) >= len(binaryArray)-3:
-            startDate = leavesInfo.datesForLeaves[0] + datetime.timedelta(days=f)
-            endDate = leavesInfo.datesForLeaves[0] + datetime.timedelta(days=l)
-            leaveDates=[]
-            leavesUsed=0
-            for i in range (startDate, endDate+1):
-                leaveDates.append(leavesInfo.datesForLeaves[0]+datetime.timedelta(days=i))
-                if binaryArray[i] == 0:
-                    leavesUsed += 1
+    # Create a binary array representing the leave and holiday dates
+    binaryArray = createBinaryArray(leavesUser.datesForLeaves, leavesCalendarific)
 
-            totalLeaves = i-1
+    # Initialize variables for the sliding window
+    maxLeavesUsed = 0
+    bestChunks = []
 
-            chunk = leavesChunk(
-                startDate=startDate,
-                endDate=endDate,
-                leaveDates=leaveDates,
-                totalLeaves=totalLeaves,
-                leavesUsed=leavesUsed
-            )
+    # Sliding window logic to find the best chunk of leaves
+    for i in range(len(binaryArray)):
+        for j in range(i, len(binaryArray)):
+            currentChunk = binaryArray[i : j + 1]
+            leavesUsed = sum(currentChunk)
 
-    return(chunk)
+            if leavesUsed > maxLeavesUsed:
+                maxLeavesUsed = leavesUsed
+                bestChunks = [
+                    leavesChunk(
+                        startDate=leavesUser.datesForLeaves[i],
+                        endDate=leavesUser.datesForLeaves[j],
+                        leaveDates=leavesUser.datesForLeaves[i : j + 1],
+                        totalLeaves=len(currentChunk),
+                        leavesUsed=leavesUsed,
+                    )
+                ]
+            elif leavesUsed == maxLeavesUsed:
+                bestChunks.append(
+                    leavesChunk(
+                        startDate=leavesUser.datesForLeaves[i],
+                        endDate=leavesUser.datesForLeaves[j],
+                        leaveDates=leavesUser.datesForLeaves[i : j + 1],
+                        totalLeaves=len(currentChunk),
+                        leavesUsed=leavesUsed,
+                    )
+                )
 
-
-if __name__ == "__main__":
-    binary = [1, 0, 0, 1, 0]
-    slidingWindowLogic(windowLen=3, binaryArray=binary)
+    return bestChunks

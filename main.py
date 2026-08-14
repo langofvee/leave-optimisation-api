@@ -1,17 +1,13 @@
-import datetime
-import os
-from datetime import date
-
-# from django.db.models.functions import window
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 
-import creatingBinaryArray
-from models import calendarificInput, leavePlan, leavesChunk, leavesInfo
+from models import calendarificInput, leavePlan, leavesInfo
+from slidingWindowLogic import slidingWindowLogic
 
 load_dotenv()
 
 app = FastAPI()
+
 
 ########################
 @app.get("/")
@@ -21,8 +17,8 @@ def home():
 
 ########################
 
-@app.post("/optimiseLeaves", response_model=leavePlan)
 
+@app.post("/optimiseLeaves", response_model=leavePlan)
 def accept_details(dataInputLeaves: leavesInfo, dataCalendarific: calendarificInput):
     if len(dataInputLeaves.datesForLeaves) != (dataInputLeaves.numOfLeaves):
         raise HTTPException(
@@ -30,5 +26,6 @@ def accept_details(dataInputLeaves: leavesInfo, dataCalendarific: calendarificIn
             detail="the number of leaves and number of dates entered do not match",
         )
     else:
-        #sliding window logic to find the best chunk of leaves
-
+        # sliding window logic to find the best chunk of leaves
+        slidingWindowOutput = slidingWindowLogic(dataInputLeaves, dataCalendarific)
+        print(slidingWindowOutput)
