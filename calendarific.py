@@ -1,26 +1,36 @@
-import json
+#gives the list of holidays from Calendarific API for a given country, year and type of holiday
+
 import os
 
 import httpx
 from dotenv import load_dotenv
-from pydantic import BaseModel
-
 
 load_dotenv()
 
 api_key = os.getenv("CALENDARIFIC_API_KEY")
 
-response = httpx.get(
+
+def calendarificCall( country: str, year: int, type: str):
+    
+    response = httpx.get(
     "https://calendarific.com/api/v2/holidays",
     params={
         "api_key": api_key,
-        "country": "IN",
-        "year": 2026,
-        "type": "national",
-        "month": 8,
+        "country": country,
+        "year": year,
+        "type": type,
     },
-)
-data = response.json()
+    )
+    
+    data = response.json()
+    
+    #gives all the holidays in the given year for the given country and type of holiday
+    
+    listOfHolidays = []
 
-print(response.status_code)
-print(json.dumps(data, indent=4, sort_keys=True))
+    holidays = data["response"]["holidays"]
+    
+    for holiday in holidays:
+        listOfHolidays.append(holiday["date"]["iso"])
+
+    return listOfHolidays

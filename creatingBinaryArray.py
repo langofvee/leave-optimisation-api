@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 
-from main import leavesInfo
 
+#input from combinedLeaves.py
 
 def create_binary_array(listOfLeaveDates: leavesInfo.datesForLeaves) -> list[int]:
 
