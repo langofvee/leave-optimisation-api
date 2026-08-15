@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 
-from models import calendarificInput, leavePlan, leavesInfo
+from schemas import calendarificInput, leavePlan, leavesInfo
 from slidingWindowLogic import slidingWindowLogic
 
 load_dotenv()

@@ -8,10 +8,10 @@ from pydantic import BaseModel
 # dates are in YYYY-MM-DD format
 
 
-#input models for the API
+#input schemas for the API
 class calendarificInput(BaseModel):
     country: str = "IN"
-    year: int = datetime.datetime.now(tz=datetime.timezone.utc).year
+    years: list[int] = [datetime.datetime.now(tz=datetime.timezone.utc).year]
     type: str = "national"  # national, religious, local, observance
     # month: int = datetime.datetime.now(tz=datetime.timezone.utc).month
     
@@ -19,15 +19,23 @@ class calendarificInput(BaseModel):
 class leavesInfo(BaseModel):
     numOfLeaves: int
     datesForLeaves: list[date]
+    
     saturdayIncluded: bool = True
     sundayIncluded: bool = True
-    sandwichLeavesConsidered: bool = True
-    calendarificInput: calendarificInput = calendarificInput()
+    mondayIncluded: bool = False
+    tuesdayIncluded: bool = False
+    wednesdayIncluded: bool = False
+    thursdayIncluded: bool = False
+    fridayIncluded: bool = False
+    
+    sandwichLeavesConsidered: bool = False #sandwich leaves to be considered later in the algorithm
+    
+    calendarificData: calendarificInput = calendarificInput()
   
   
   
   
-#models for algorithm processing  
+#schemas for algorithm processing  
 class combinedListOfLeaves(BaseModel):
     leaveDates: list[date]
     holidayDates: list[date]
@@ -36,9 +44,10 @@ class combinedListOfLeaves(BaseModel):
 
   
     
-#output sub-model for the API  
-class CalendarificOutput(BaseModel):
-    pass
+#sub-output model for the API  
+
+# class CalendarificOutput(BaseModel):
+#     pass
 
 class leavesChunk(BaseModel):
     startDate: date

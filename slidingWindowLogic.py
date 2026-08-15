@@ -1,5 +1,5 @@
 from creatingBinaryArray import createBinaryArray
-from models import calendarificInput, leavesChunk, leavesInfo
+from schemas import calendarificInput, leavesChunk, leavesInfo
 
 
 # input from binary array
