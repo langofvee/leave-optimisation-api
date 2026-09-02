@@ -1,7 +1,7 @@
 from datetime import timedelta
 
-from combinedLeaves import combineLeavesAndHolidays
-from schemas import calendarificInput, leavesInfo
+from schemas.models import calendarificInput, leavesInfo
+from services.combinedLeaves import combineLeavesAndHolidays
 
 # input from combinedLeaves.py
 

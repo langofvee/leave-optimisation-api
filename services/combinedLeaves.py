@@ -1,10 +1,10 @@
 #take leaves from calendarific API and user input, and return all the dates of leaves and holidays in a single list
 
-from calendarific import calendarificCall
-from schemas import (
+from schemas.models import (
     combinedListOfLeaves,
     leavesInfo,
 )
+from services.calendarific import calendarificCall
 
 
 def combineLeavesAndHolidays(leavesInfo: leavesInfo) -> combinedListOfLeaves:
