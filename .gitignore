@@ -9,3 +9,6 @@ env/
 # python cache
 __pycache__/
 *.pyc
+
+# IDE
+.idea/
